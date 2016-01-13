@@ -38,7 +38,7 @@ within Juttle. To do so, add the following to your `~/.juttle/config.json` file:
 ```json
 {
     "adapters": {
-        "juttle-opentsdb-adapter": {
+        "opentsdb": {
             "host": "hostname"
             "port": 1234
         }
