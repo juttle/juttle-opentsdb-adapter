@@ -15,10 +15,10 @@ describe('test db connection error', function () {
     });
     it('error on incorrect connection string or credentials', function() {
         return check_juttle({
-            program: 'read opentsdbtest -from :30 minutes ago: -name "df.bytes.used"'
+            program: 'read opentsdbtest -from :30 minutes ago: -name "' + TestUtils.metric_name + '"'
         })
         .then(function(result) {
-            expect(result.errors[0]).to.contain('could not connect to database');
+            expect(result.errors[0]).to.contain('connect to database');
         });
     });
 });

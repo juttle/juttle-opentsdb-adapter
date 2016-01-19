@@ -1,59 +1,36 @@
 var expect = require('chai').expect;
 var TestUtils = require("./utils");
 var check_juttle = TestUtils.check_juttle;
+var _ = require('underscore');
 
 describe('test tag filters', function () {
-    var host_tag_val;
-    var fstype_tag_val;
-    var metric_name = "df.bytes.used";
-    before(function() {
+    it('by single tag', function() {
         return check_juttle({
-            program: 'read opentsdb -from :30 minutes ago: -name "' + metric_name + '"'
+            program: 'read opentsdb -from :30 minutes ago: -name "' + TestUtils.metric_name + '" host = "123"'
         })
         .then(function(result) {
             expect(result.errors).to.have.length(0);
             expect(result.warnings).to.have.length(0);
-            expect(result.sinks.table).to.have.length.gt(0);
-            host_tag_val = result.sinks.table[0].host;
-            fstype_tag_val = result.sinks.table[0].fstype;
+            expect(result.sinks.table).to.have.length.gt(1);
         });
     });
-    it('by tag', function() {
+    it('by two existing tags', function() {
         return check_juttle({
-            program: 'read opentsdb -from :30 minutes ago: -name "' + metric_name + '" host = "' + host_tag_val + '"'
-        })
-        .then(function(result) {
-            expect(result.errors).to.have.length(0);
-            expect(result.warnings).to.have.length(0);
-
-            expect(result.sinks.table).to.have.length.gt(2);
-            result.sinks.table.forEach(function(metric) {
-                expect(metric.host).to.equal(host_tag_val);
-            });
-        });
-    });
-    it('by two tags', function() {
-        return check_juttle({
-            program: 'read opentsdb -from :30 minutes ago: -name "'
-                + metric_name + '" host = "' + host_tag_val + '" AND '
-                + 'fstype = "' + fstype_tag_val + '"'
+            program: 'read opentsdb -debug true -from :30 minutes ago: -name "'
+                + TestUtils.metric_name + '" host = "123" AND special = "234"'
         })
         .then(function(result) {
             expect(result.errors).to.have.length(0);
             expect(result.warnings).to.have.length(0);
 
-            expect(result.sinks.table).to.have.length.gt(2);
-            result.sinks.table.forEach(function(metric) {
-                expect(metric.host).to.equal(host_tag_val);
-                expect(metric.fstype).to.equal(fstype_tag_val);
-            });
+            expect(result.sinks.table).to.have.length(1);
         });
     });
-    it('by two tags false filter', function() {
+    it('by non-existant tag key', function() {
         return check_juttle({
             program: 'read opentsdb -from :30 minutes ago: -name "'
-                + metric_name + '" host = "' + host_tag_val + '" AND '
-                + 'fstype = "gibberish"'
+                + TestUtils.metric_name + '" host = "123" AND '
+                + 'nonsense = "gibberish"'
         })
         .then(function(result) {
             expect(result.errors).to.have.length(0);
@@ -61,9 +38,48 @@ describe('test tag filters', function () {
             expect(result.sinks.table).to.have.length(0);
         });
     });
+    it('by non-existant tag value', function() {
+        return check_juttle({
+            program: 'read opentsdb -from :30 minutes ago: -name "'
+                + TestUtils.metric_name + '" host = "888"'
+        })
+        .then(function(result) {
+            expect(result.errors).to.have.length(0);
+            expect(result.warnings).to.have.length(0);
+            expect(result.sinks.table).to.have.length(0);
+        });
+    });
+    it('by all host tags', function() {
+        return check_juttle({
+            program: 'read opentsdb -from :30 minutes ago: -name "'
+                + TestUtils.metric_name + '" host = "*"'
+        })
+        .then(function(result) {
+            expect(result.errors).to.have.length(0);
+            expect(result.warnings).to.have.length(0);
+            expect(result.sinks.table).to.have.length.gt(0);
+            result.sinks.table.forEach(function(pt) {
+                // host=* is a grouping so only points with host tag will show up.
+                expect(!!pt.host).to.be.true;
+            });
+        });
+    });
+    it('by some host tags', function() {
+        return check_juttle({
+            program: 'read opentsdb -from :30 minutes ago: -name "'
+                + TestUtils.metric_name + '" host = "123|456"'
+        })
+        .then(function(result) {
+            expect(result.errors).to.have.length(0);
+            expect(result.warnings).to.have.length(0);
+            expect(result.sinks.table).to.have.length.gt(0);
+            var hosts = _.chain(result.sinks.table).pluck('host').unique().value();
+            expect(hosts).eql(["123", "456"]);
+        });
+    });
     it('by tag operater error', function() {
         return check_juttle({
-            program: 'read opentsdb -from :30 minutes ago: -name "' + metric_name + '" host != "' + host_tag_val + '"'
+            program: 'read opentsdb -from :30 minutes ago: -name "' + TestUtils.metric_name + '" host != "123"'
         })
         .then(function() {
             throw new Error('Should never see this error');
