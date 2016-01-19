@@ -7,7 +7,8 @@ describe('OpenTSDB adapter API tests', function () {
                 host: '192.168.99.100',
                 port: 4247
             };
-            return TestUtils.init(config);
+            TestUtils.init(config);
+            return TestUtils.loadSampleData(config);
         });
 
         require('./options.spec');
