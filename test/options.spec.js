@@ -6,7 +6,7 @@ describe('test options', function () {
 
     it('-debug and -name', function() {
         return check_juttle({
-            program: 'read opentsdb -debug true -from :0 minutes ago: -name "' + TestUtils.metric_name + '"'
+            program: 'read opentsdb -debug true -from :30 minutes ago: -name "' + TestUtils.metric_name + '"'
         })
         .then(function(result) {
             expect(result.errors).to.have.length(0);

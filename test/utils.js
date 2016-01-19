@@ -1,4 +1,6 @@
 var juttle_test_utils = require('juttle/test/runtime/specs/juttle-test-utils');
+var OpentsdbSocket = require('opentsdb-socket');
+var retry = require('bluebird-retry');
 var check_juttle = juttle_test_utils.check_juttle;
 var Juttle = require('juttle/lib/runtime').Juttle;
 var OpenTSDB = require('../');
@@ -29,7 +31,12 @@ var TestUtils = {
         })
         .delay(2000)//allow time for metric to be ready for query
         .then(function() {
-            return self.expectMetricExists(self.metric_name);
+            return retry(function() {
+                return self.expectMetricExists();
+            }, {
+                 interval: 3000,
+                 timeout: 20000
+            });
         })
         .then(function() {
             return self.socket.end();
@@ -38,7 +45,7 @@ var TestUtils = {
     getSocketConnection: function(config) {
         var self = this;
         return new Promise(function(resolve, reject) {
-            var socket = require('opentsdb-socket')();
+            var socket = OpentsdbSocket();
             socket = Promise.promisifyAll(socket);
             socket.host(config.host);
             socket.port(config.port);
@@ -83,9 +90,9 @@ var TestUtils = {
         }
         return this.socket.writeAsync( 'put ' + datum.toString() + '\n');
     },
-    expectMetricExists: function(metric_name) {
+    expectMetricExists: function() {
         return this.check_juttle({
-            program: 'read opentsdb -from :30 minutes ago: -name "' + metric_name + '"'
+            program: 'read opentsdb -from :30 minutes ago: -name "' + this.metric_name + '"'
         }).then(function(result) {
             expect(result.sinks.table).to.have.length.gt(0);
         });
