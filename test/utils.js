@@ -34,8 +34,8 @@ var TestUtils = {
             return retry(function() {
                 return self.expectMetricExists();
             }, {
-                 interval: 3000,
-                 timeout: 20000
+                interval: 3000,
+                timeout: 20000
             });
         })
         .then(function() {
