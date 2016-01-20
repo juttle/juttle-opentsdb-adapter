@@ -24,7 +24,7 @@ var TestUtils = {
     loadSampleData: function (config) {
         var self = this;
 
-        this.metric_name = 'test.unit.' + Math.random().toString(36).slice(2,7);
+        this.metric_name = 'test.unit.' + Math.random().toString(36).slice(2,10);
 
         var insertJuttles = [
             `emit -limit 1 | put general = "here", name = "${this.metric_name}", value = ${randomInt()} | write opentsdb`,
@@ -34,21 +34,26 @@ var TestUtils = {
         ];
 
         return Promise.each(insertJuttles, function(juttle) {
-            return self.check_juttle({
-                program: juttle
-            });
+            return self.check_juttle({ program: juttle });
         })
         .then(function() {
-            return retry(function() {
-                return self.check_juttle({
-                    program: 'read opentsdb -from :30 minutes ago: -name "' + self.metric_name + '"'
-                }).then(function(result) {
-                    expect(result.sinks.table).to.have.length(insertJuttles.length);
-                });
-            }, {
-                interval: 1000,
-                timeout: 10000
+            return self.expectMetricsExist(insertJuttles.length);
+        });
+    },
+    expectMetricsExist: function(numberOfMetrics) {
+        var self = this;
+
+        numberOfMetrics = numberOfMetrics || 1;
+
+        return retry(function() {
+            return self.check_juttle({
+                program: 'read opentsdb -from :30 minutes ago: -name "' + self.metric_name + '"'
+            }).then(function(result) {
+                expect(result.sinks.table).to.have.length(numberOfMetrics);
             });
+        }, {
+            interval: 1000,
+            timeout: 10000
         });
     }
 };
