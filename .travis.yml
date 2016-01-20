@@ -1,0 +1,32 @@
+language: node_js
+
+sudo: required
+
+services:
+    - docker
+
+addons:
+  apt:
+    sources:
+        - ubuntu-toolchain-r-test
+    packages:
+        - g++-4.8
+
+before_install:
+  - export CXX="g++-4.8"
+  - docker pull opower/opentsdb
+  - docker run -d -p 127.0.0.1:4242:4242 --name opentsdb opower/opentsdb
+  - docker ps -a
+
+node_js:
+    - '4.2'
+    - '5.0'
+
+before_script:
+    - npm install juttle@^0.3.0
+    - npm install -g jshint
+    - npm install -g jscs
+
+script:
+    - npm run -s lint
+    - npm test
