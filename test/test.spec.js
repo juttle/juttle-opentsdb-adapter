@@ -13,6 +13,7 @@ describe('OpenTSDB adapter API tests', function () {
 
         require('./options.spec');
         require('./filters.spec');
+        require('./write.spec');
     });
 
     require('./db.spec');
