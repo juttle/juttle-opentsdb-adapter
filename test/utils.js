@@ -33,26 +33,43 @@ var TestUtils = {
             `emit -limit 1 | put general = "here", host = "456", special = "234", name = "${this.metric_name}", value = ${randomInt()} | write opentsdb`
         ];
 
-        return Promise.each(insertJuttles, function(juttle) {
+        return Promise.mapSeries(insertJuttles, function(juttle) {
             return self.check_juttle({ program: juttle });
         })
-        .then(function() {
-            return self.expectMetricsExist(insertJuttles.length);
+        .then(function(writeResults) {
+            return self.expectMetricsWritten(writeResults[0], self.metric_name, insertJuttles.length);
         });
     },
-    expectMetricsExist: function(numberOfMetrics) {
+    expectMetricsWritten: function(writeResult, metric_name, numberOfMetricsExpected) {
         var self = this;
+        numberOfMetricsExpected = numberOfMetricsExpected || 1;
 
-        numberOfMetrics = numberOfMetrics || 1;
+        expect(writeResult.errors[0]).equals(undefined);
+        expect(writeResult.warnings).to.have.length(0);
+        expect(writeResult.sinks).to.not.include.keys('table', 'logger');
 
         return retry(function() {
-            return self.check_juttle({
-                program: 'read opentsdb -from :30 minutes ago: -name "' + self.metric_name + '"'
+            return check_juttle({
+                program: `read opentsdb -from :30 minutes ago: -name "${metric_name}"`
             }).then(function(result) {
-                expect(result.sinks.table).to.have.length(numberOfMetrics);
+                expect(result.errors).to.have.length(0);
+                expect(result.warnings).to.have.length(0);
+                expect(result.sinks.table).to.have.length.gt(0);
+
+                var pt = result.sinks.table[0];
+                var pt_time = Date.parse(pt.time);
+                expect(isNaN(pt_time)).to.be.false;
+
+                //test if date makes sense.
+                var today = new Date();
+                var yesterday = new Date();
+                yesterday.setDate(today.getDate() - 1);
+                expect(pt_time).gt(Date.parse(yesterday));
+
+                return result;
             });
         }, {
-            interval: 1000,
+            interval: 300,
             timeout: 10000
         });
     }

@@ -4,54 +4,56 @@ var retry = require('bluebird-retry');
 var check_juttle = TestUtils.check_juttle;
 
 describe('write proc', function () {
-    it('write points', function() {
-        var metric_name = 'test.unit.' + Math.random().toString(36).slice(2,7);
+    var metric_name = 'test.unit.' + Math.random().toString(36).slice(2,10);
 
+    it('write point', function() {
         return check_juttle({
             program: `emit -limit 1 | put t = "temp", value = 123, name = "${metric_name}" | write opentsdb`
         })
-        .then(function(result) {
-            expect(result.errors[0]).equals(undefined);
-            expect(result.warnings).to.have.length(0);
-            expect(result.sinks).to.not.include.keys('table', 'logger');
+        .then(function(writeResult) {
+            return TestUtils.expectMetricsWritten(writeResult, metric_name);
         })
-        .then(function() {
-            retry(function() {
-                return check_juttle({
-                    program: `read opentsdb -from :30 minutes ago: -name "${metric_name}"`
-                }).then(function(result) {
-                    expect(result.errors).to.have.length(0);
-                    expect(result.warnings).to.have.length(0);
-                    expect(result.sinks.table).to.have.length.gt(0);
+        .then(function(result) {
+            var pt = result.sinks.table[0];
 
-                    var pt = result.sinks.table[0];
-
-                    expect(pt.t).equals('temp');
-
-                    var pt_time = Date.parse(pt.time);
-                    expect(isNaN(pt_time)).to.be.false;
-
-                    //test if date makes sense.
-                    var today = new Date();
-                    var yesterday = new Date();
-                    yesterday.setDate(today.getDate() - 1);
-                    expect(pt_time).gt(Date.parse(yesterday));
-                });
-            }, {
-                interval: 500,
-                timeout: 10000
-            });
+            expect(pt.t).equals('temp');
         });
     });
-    it('write proc valueless point', function() {
-        var metric_name = 'test.unit.' + Math.random().toString(36).slice(2,7);
+    it('write multiple points', function() {
+        var multi_write_metric_name = 'test.unit.' + Math.random().toString(36).slice(2,10);
 
+        return check_juttle({
+            program: `emit -limit 3 | put temp = "multi", value = 123, name = "${multi_write_metric_name}" | write opentsdb`
+        })
+        .then(function(writeResult) {
+            return TestUtils.expectMetricsWritten(writeResult, multi_write_metric_name, 3);
+        });
+    });
+    it('error writing proc valueless point', function() {
         return check_juttle({
             program: `emit -limit 1 | put t = "temp", name = "${metric_name}"  | write opentsdb`
         })
         .then(function(result) {
             expect(result.errors[0]).equals(undefined);
             expect(result.warnings[0]).to.contain("without metric value");
+        });
+    });
+    it('error writing nameless point', function() {
+        return check_juttle({
+            program: `emit -limit 1 | put t = "temp", value = 123  | write opentsdb`
+        })
+        .then(function(result) {
+            expect(result.errors[0]).equals(undefined);
+            expect(result.warnings[0]).to.contain("without metric name");
+        });
+    });
+    it('write proc timeless point', function() {
+        var timeless_metric_name = 'test.unit.' + Math.random().toString(36).slice(2,10);
+        return check_juttle({
+            program: `emit -limit 1 | put t = "temp", value = 123, name = "${timeless_metric_name}" | keep t,value,name | write opentsdb`
+        })
+        .then(function(writeResult) {
+            return TestUtils.expectMetricsWritten(writeResult, timeless_metric_name);
         });
     });
 });
