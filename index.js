@@ -9,6 +9,7 @@ function OpentsdbAdapter(config) {
     return {
         name: 'opentsdb',
         read: require('./lib/read'),
+        write: require('./lib/write')
     };
 }
 module.exports = OpentsdbAdapter;
