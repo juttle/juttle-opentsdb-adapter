@@ -1,6 +1,5 @@
 var expect = require('chai').expect;
 var TestUtils = require("./utils");
-var retry = require('bluebird-retry');
 var check_juttle = TestUtils.check_juttle;
 
 describe('write proc', function () {

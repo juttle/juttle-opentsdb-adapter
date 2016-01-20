@@ -41,7 +41,6 @@ var TestUtils = {
         });
     },
     expectMetricsWritten: function(writeResult, metric_name, numberOfMetricsExpected) {
-        var self = this;
         numberOfMetricsExpected = numberOfMetricsExpected || 1;
 
         expect(writeResult.errors[0]).equals(undefined);
