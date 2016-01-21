@@ -17,9 +17,9 @@ Add a `debug` option to return the final http query url:
 read opentsdb -debug true -from :30 minutes ago: -name "df.bytes.used"
 ```
 
-Filter by tags:
+Filter by host tag:
 ```juttle
-read opentsdb -debug true -from :30 minutes ago: -name "df.bytes.used" host = "test_host_name"
+read opentsdb -from :30 minutes ago: -name "df.bytes.used" host = "test_host_name"
 ```
 
 ## Installation
