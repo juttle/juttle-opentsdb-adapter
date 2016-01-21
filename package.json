@@ -20,7 +20,9 @@
   },
   "dependencies": {
     "bluebird": "^3.0.5",
+    "bluebird-retry": "^0.5.3",
     "opentsdb": "^0.5.5",
+    "opentsdb-socket": "0.0.2",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -30,7 +32,7 @@
     "jscs": "^2.6.0"
   },
   "peerDependencies": {
-    "juttle": "^0.2.0"
+    "juttle": "^0.3.0"
   },
   "engines": {
     "node": ">=4.2.0",

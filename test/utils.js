@@ -5,6 +5,7 @@ var Juttle = require('juttle/lib/runtime').Juttle;
 var OpenTSDB = require('../');
 var Promise = require('bluebird');
 var expect = require('chai').expect;
+var logger = require('juttle/lib/logger').getLogger('opentsdb-test-utils');
 
 function randomInt() {
     return Math.floor((Math.random() * 100000) + 1);
@@ -25,6 +26,7 @@ var TestUtils = {
         var self = this;
 
         this.metric_name = 'test.unit.' + Math.random().toString(36).slice(2,10);
+        logger.info('Metric name used for testing: ', this.metric_name);
 
         var insertJuttles = [
             `emit -limit 1 | put general = "here", name = "${this.metric_name}", value = ${randomInt()} | write opentsdb`,

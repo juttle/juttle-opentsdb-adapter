@@ -1,5 +1,7 @@
 # Juttle OpenTSDB Adapter
 
+[![Build Status](https://travis-ci.org/juttle/juttle-opentsdb-adapter.svg?branch=master)](https://travis-ci.org/juttle/juttle-opentsdb-adapter)
+
 OpenTSDB adapter for the [Juttle data flow
 language](https://github.com/juttle/juttle), with read & write support.
 
