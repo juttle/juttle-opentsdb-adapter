@@ -1,4 +1,5 @@
 var juttle_test_utils = require('juttle/test/runtime/specs/juttle-test-utils');
+var _ = require('underscore');
 var retry = require('bluebird-retry');
 var check_juttle = juttle_test_utils.check_juttle;
 var Juttle = require('juttle/lib/runtime').Juttle;
@@ -31,8 +32,8 @@ var TestUtils = {
         var insertJuttles = [
             `emit -limit 1 | put general = "here", name = "${this.metric_name}", value = ${randomInt()} | write opentsdb`,
             `emit -limit 1 | put general = "here", host = "123", name = "${this.metric_name}", value = ${randomInt()} | write opentsdb`,
-            `emit -limit 1 | put general = "here", host = "123", name = "${this.metric_name}", value = ${randomInt()} | write opentsdb`,
-            `emit -limit 1 | put general = "here", host = "456", special = "234", name = "${this.metric_name}", value = ${randomInt()} | write opentsdb`
+            `emit -limit 1 | put general = "here", host = "456", special = "234", name = "${this.metric_name}", value = ${randomInt()} | write opentsdb`,
+            `emit -limit 1 | put general = "here", host = "123", name = "${this.metric_name}", value = ${randomInt()} | write opentsdb`
         ];
 
         return Promise.mapSeries(insertJuttles, function(juttle) {
@@ -40,6 +41,16 @@ var TestUtils = {
         })
         .then(function(writeResults) {
             return self.expectMetricsWritten(writeResults[0], self.metric_name, insertJuttles.length);
+        });
+    },
+    expectIncreasingTime: function(points) {
+        var t;
+        _.each(points, function(pt) {
+            var date = new Date(pt.time).toISOString();
+            if (t) {
+                expect(date).to.be.gt(t);
+            }
+            t = date;
         });
     },
     expectMetricsWritten: function(writeResult, metric_name, numberOfMetricsExpected) {

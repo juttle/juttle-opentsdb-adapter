@@ -62,6 +62,7 @@ describe('test tag filters', function () {
                 // host=* is a grouping so only points with host tag will show up.
                 expect(!!pt.host).to.be.true;
             });
+            TestUtils.expectIncreasingTime(result.sinks.table);
         });
     });
     it('by some host tags', function() {
