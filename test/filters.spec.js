@@ -85,7 +85,7 @@ describe('test tag filters', function () {
             throw new Error('Should never see this error');
         })
         .catch(function(err) {
-            expect(err.message).to.equal("Error: Only AND and '=' operators with string values are supported in the optimized filter expression.");
+            expect(err.message).to.match(/Only AND and '=' operators with string values are supported in the optimized filter expression/);
         });
     });
 });
