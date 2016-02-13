@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/juttle/juttle-opentsdb-adapter.svg?branch=master)](https://travis-ci.org/juttle/juttle-opentsdb-adapter)
 
-OpenTSDB adapter for the [Juttle data flow
+[OpenTSDB](https://github.com/OpenTSDB/opentsdb/) adapter for the [Juttle data flow
 language](https://github.com/juttle/juttle), with read & write support.
 
 ## Examples
@@ -20,6 +20,11 @@ read opentsdb -debug true -from :30 minutes ago: -name "df.bytes.used"
 Filter by host tag:
 ```juttle
 read opentsdb -from :30 minutes ago: -name "df.bytes.used" host = "test_host_name"
+```
+
+Write a test point:
+```juttle
+emit -points [ { time: '2016-01-01T01:01:01.111Z', name: 'test.test', value: 11, tag1: 'a_tag' } ] | write opentsdb
 ```
 
 ## Installation
@@ -41,7 +46,7 @@ within Juttle. To do so, add the following to your `~/.juttle/config.json` file:
 {
     "adapters": {
         "opentsdb": {
-            "host": "hostname"
+            "host": "IP address",
             "port": 1234
         }
     }
@@ -55,7 +60,34 @@ Name | Type | Required | Description
 `name` | string | yes | name of the metric to query
 `debug` | boolean | no | output a query url corresponding to current set of options and filters
 `from` | moment | yes | select points after this time (inclusive)
-`to`   | moment | no | select points before this time (exclusive)
+`to`   | moment | no | select points before this time (exclusive), defaults to `:now:`
+
+In addition to these options, `read opentsdb` supports a subset of standard Juttle
+[read filters](http://juttle.github.io/juttle/concepts/filtering/), namely:
+- `tagfield = 'value'`
+- `tagfield = '*glob*'`
+- combining the above filter expressions with `AND`
+
+### Write options
+
+`write opentsdb` takes no options; however, the data points passed into it must contain fields:
+- `name` (type: string)
+- `value` (type: number)
+- `time` (type: Juttle moment)
+Optionally, the points can contain one or more tag fields (type: string).
+
+### Optimizations
+
+Whenever the opentsdb adapter can shape the entire Juttle flowgraph or its portion into an OpenTSDB query,
+it will do so, sending the execution to OpenTSDB, so only the matching data will come back into Juttle runtime.
+The portion of the program expressed in `read opentsdb` is always executed as an OpenTSDB query;
+the downstream Juttle processors are currently not optimized, but may be in the future.
+
+List of optimized operations:
+- only filter expressions as part of `read opentsdb` (note: `read opentsdb ... | filter` is not optimized)
+
+In case of unexpected behavior with optimized reads, add `-optimize false` option to `read opentsdb`
+to disable optimizations, and kindly report the problem as a GitHub issue.
 
 ## Contributing
 
