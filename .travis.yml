@@ -20,13 +20,12 @@ before_install:
 
 node_js:
     - '4.2'
-    - '5.0'
 
 before_script:
-    - npm install juttle@>=0.4.0
-    - npm install -g jshint
-    - npm install -g jscs
+    - npm install juttle/juttle;
+    - pushd node_modules/juttle; npm install; popd
 
 script:
-    - npm run -s lint
     - npm test
+    - npm run test-coverage
+    - npm run check-coverage
