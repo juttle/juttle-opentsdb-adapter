@@ -1,3 +1,5 @@
+require('./shared');
+
 var expect = require('chai').expect;
 var TestUtils = require("./utils");
 var check_juttle = TestUtils.check_juttle;

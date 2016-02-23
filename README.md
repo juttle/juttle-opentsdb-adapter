@@ -61,6 +61,7 @@ Name | Type | Required | Description
 `debug` | boolean | no | output a query url corresponding to current set of options and filters
 `from` | moment | yes | select points after this time (inclusive)
 `to`   | moment | no | select points before this time (exclusive), defaults to `:now:`
+`id`   | string | no | select the config instance to use
 
 In addition to these options, `read opentsdb` supports a subset of standard Juttle
 [read filters](http://juttle.github.io/juttle/concepts/filtering/), namely:
@@ -70,7 +71,13 @@ In addition to these options, `read opentsdb` supports a subset of standard Jutt
 
 ### Write options
 
-`write opentsdb` takes no options; however, the data points passed into it must contain fields:
+Name | Type | Required | Description
+-----|------|----------|-------------
+`nameField` | string | no | the field that contains the metric name. Defaults to `name`.
+`valueField` | string | no | the field that contains the metric value. Defaults to `value`.
+`id`   | string | no | select the config instance to use
+
+`write opentsdb`: the data points passed into it must contain fields:
 - `name` (type: string)
 - `value` (type: number)
 - `time` (type: Juttle moment)
