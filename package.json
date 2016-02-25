@@ -13,10 +13,12 @@
   "repository": "juttle/juttle-opentsdb-adapter",
   "scripts": {
     "shrinkwrap": "npm-shrinkwrap",
-    "test": "mocha test/test.spec.js",
-    "jshint": "jshint *.js test/*.js lib/*.js",
-    "style": "jscs *.js test/*.js lib/*.js",
-    "lint": "npm run jshint & npm run style"
+    "test": "npm run unit && npm run lint",
+    "test-coverage": "istanbul cover node_modules/.bin/_mocha -- test/*.spec.js",
+    "unit": "mocha test/*.spec.js",
+    "hist": "mocha test/*.spec.js -g live -i",
+    "lint": "eslint **/*.js *.js",
+    "check-coverage": "istanbul check-coverage"
   },
   "dependencies": {
     "bluebird": "^3.0.5",
@@ -27,13 +29,11 @@
   },
   "devDependencies": {
     "chai": "^1.10.0",
-    "jshint": "^2.9.1-rc1",
     "mocha": "^2.3.4",
-    "jscs": "^2.6.0"
+    "eslint": "^1.10.3",
+    "istanbul": "^0.4.2"
   },
-  "peerDependencies": {
-    "juttle": ">=0.4.0"
-  },
+  "juttleAdapterAPI": "^0.5.0",
   "engines": {
     "node": ">=4.2.0",
     "npm": ">=2.14.7"
