@@ -1,11 +1,9 @@
-var juttle_test_utils = require('juttle/test/runtime/specs/juttle-test-utils');
+var juttle_test_utils = require('juttle/test').utils;
 var retry = require('bluebird-retry');
 var check_juttle = juttle_test_utils.check_juttle;
-var Juttle = require('juttle/lib/runtime').Juttle;
-var OpenTSDB = require('../');
 var Promise = require('bluebird');
 var expect = require('chai').expect;
-var logger = require('juttle/lib/logger').getLogger('opentsdb-test-utils');
+var logger = require('juttle/lib/logger').getLogger('sql-test-util');
 
 function randomInt() {
     return Math.floor((Math.random() * 100000) + 1);
@@ -13,11 +11,18 @@ function randomInt() {
 
 var TestUtils = {
     init: function (config) {
-        var adapter = OpenTSDB(config);
-        Juttle.adapters.register(adapter.name, adapter);
+        juttle_test_utils.configureAdapter({ opentsdb: config });
     },
-    check_juttle: function(params) {
-        return check_juttle(params);
+    check_juttle: function(params, deactivateAfter) {
+        return check_juttle(params, deactivateAfter);
+    },
+    check_juttle_success: function(params, deactivateAfter) {
+        return check_juttle(params, deactivateAfter)
+        .then(function(res) {
+            expect(res.errors[0]).to.equal(undefined);
+            expect(res.warnings[0]).to.equal(undefined);
+            return res;
+        });
     },
     getTestMetricName: function() {
         return this.metric_name;
@@ -41,6 +46,19 @@ var TestUtils = {
         .then(function(writeResults) {
             return self.expectMetricsWritten(writeResults[0], self.metric_name, insertJuttles.length);
         });
+    },
+    addFuturePoints: function() {
+        var self = this;
+
+        var futurePointJuttles = [
+            `emit -limit 1 | put general = "here", name = "${this.metric_name}", value = ${randomInt()}, time = (:now: + :2s:) | write opentsdb`,
+            `emit -limit 1 | put general = "here", name = "${this.metric_name}", value = ${randomInt()}, time = (:now: + :3s:) | write opentsdb`
+        ];
+
+        return Promise.map(futurePointJuttles, function(juttle) {
+            return self.check_juttle({ program: juttle });
+        })
+        .then(() => futurePointJuttles.length);
     },
     expectMetricsWritten: function(writeResult, metric_name, numberOfMetricsExpected) {
         numberOfMetricsExpected = numberOfMetricsExpected || 1;
