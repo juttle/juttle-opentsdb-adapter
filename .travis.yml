@@ -23,6 +23,7 @@ node_js:
 
 before_script:
     - npm install juttle@^0.5.0;
+    - pushd node_modules/juttle; npm install; popd;
 
 script:
     - npm run test-coverage
