@@ -22,7 +22,8 @@ node_js:
     - '4.2'
 
 before_script:
-    - npm install juttle@^0.5.0
+    - npm install juttle/juttle;
+    - pushd node_modules/juttle; npm install; popd
 
 script:
     - npm run test-coverage
