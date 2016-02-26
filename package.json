@@ -1,6 +1,6 @@
 {
   "name": "juttle-opentsdb-adapter",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "OpenTSDB Adapter for Juttle",
   "keywords": [
     "juttle",
