@@ -70,16 +70,16 @@ var TestUtils = {
         numberOfMetricsExpected = numberOfMetricsExpected || 1;
 
         expect(writeResult.errors[0]).equals(undefined);
-        expect(writeResult.warnings).to.have.length(0);
+        expect(writeResult.warnings[0]).equals(undefined);
         expect(writeResult.sinks).to.not.include.keys('table', 'logger');
 
         return retry(function() {
             return check_juttle({
                 program: `read opentsdb -from :30 minutes ago: -name "${metric_name}"`
             }).then(function(result) {
-                expect(result.errors).to.have.length(0);
-                expect(result.warnings).to.have.length(0);
-                expect(result.sinks.table).to.have.length.gt(0);
+                expect(result.errors[0]).equals(undefined);
+                expect(result.warnings[0]).equals(undefined);
+                expect(result.sinks.table).to.have.length.gte(numberOfMetricsExpected);
 
                 var pt = result.sinks.table[0];
                 var pt_time = Date.parse(pt.time);

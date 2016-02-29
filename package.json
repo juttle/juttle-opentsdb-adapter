@@ -25,7 +25,8 @@
     "bluebird-retry": "^0.5.3",
     "opentsdb": "^0.5.5",
     "opentsdb-socket": "0.0.2",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "datum": "juttle/datum#allow-value-zero"
   },
   "devDependencies": {
     "chai": "^1.10.0",
