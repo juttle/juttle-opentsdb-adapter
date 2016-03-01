@@ -17,6 +17,17 @@ describe('test options', function () {
             });
         });
     });
+    it('-from :0: is an acceptable query ', function() {
+        return check_juttle_success({
+            program: 'read opentsdb -from :0: -to :now: -name "' + TestUtils.metric_name + '"'
+        })
+        .then(function(result) {
+            expect(result.sinks.table).to.have.length.gt(2);
+            result.sinks.table.forEach(function(metric) {
+                expect(metric.name).to.equal(TestUtils.metric_name);
+            });
+        });
+    });
     it('live', function() {
         this.timeout(15000);
         var numFuturePoints;
