@@ -23,7 +23,7 @@
   "dependencies": {
     "bluebird": "^3.0.5",
     "bluebird-retry": "^0.5.3",
-    "opentsdb": "juttle/opentsdb.js#use-latest-client",
+    "opentsdb": "juttle/opentsdb.js#temp-client",
     "opentsdb-socket": "0.0.2",
     "underscore": "^1.8.3",
     "opentsdb-client": "juttle/client#allow-unix-time-zero",
