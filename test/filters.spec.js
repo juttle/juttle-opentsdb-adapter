@@ -3,13 +3,22 @@ require('./shared');
 var expect = require('chai').expect;
 var TestUtils = require("./utils");
 var check_juttle = TestUtils.check_juttle;
+var check_juttle_error = TestUtils.check_juttle_error;
 var check_juttle_success = TestUtils.check_juttle_success;
 var _ = require('underscore');
 
 describe('test tag filters', function () {
+    it('error when no metric name indicated', function() {
+        return check_juttle_error({
+            program: 'read opentsdb -from :30 minutes ago:'
+        })
+        .catch(function(err) {
+            expect(err.message).to.contain('filter expression must contain a metric name');
+        });
+    });
     it('by single tag', function() {
         return check_juttle_success({
-            program: 'read opentsdb -from :30 minutes ago: -name "' + TestUtils.metric_name + '" host = "123"'
+            program: 'read opentsdb -from :30 minutes ago: name = "' + TestUtils.metric_name + '" host = "123"'
         })
         .then(function(result) {
             expect(result.sinks.table).to.have.length.gt(1);
@@ -17,7 +26,7 @@ describe('test tag filters', function () {
     });
     it('by two existing tags', function() {
         return check_juttle_success({
-            program: 'read opentsdb -debug true -from :30 minutes ago: -name "'
+            program: 'read opentsdb -debug true -from :30 minutes ago: name = "'
                 + TestUtils.metric_name + '" host = "123" AND special = "234"'
         })
         .then(function(result) {
@@ -26,7 +35,7 @@ describe('test tag filters', function () {
     });
     it('by non-existant tag key', function() {
         return check_juttle_success({
-            program: 'read opentsdb -from :30 minutes ago: -name "'
+            program: 'read opentsdb -from :30 minutes ago: name = "'
                 + TestUtils.metric_name + '" host = "123" AND '
                 + 'nonsense = "gibberish"'
         })
@@ -36,7 +45,7 @@ describe('test tag filters', function () {
     });
     it('by non-existant tag value', function() {
         return check_juttle_success({
-            program: 'read opentsdb -from :30 minutes ago: -name "'
+            program: 'read opentsdb -from :30 minutes ago: name = "'
                 + TestUtils.metric_name + '" host = "888"'
         })
         .then(function(result) {
@@ -45,7 +54,7 @@ describe('test tag filters', function () {
     });
     it('by all host tags', function() {
         return check_juttle_success({
-            program: 'read opentsdb -from :30 minutes ago: -name "'
+            program: 'read opentsdb -from :30 minutes ago: name = "'
                 + TestUtils.metric_name + '" host = "*"'
         })
         .then(function(result) {
@@ -58,7 +67,7 @@ describe('test tag filters', function () {
     });
     it('by some host tags', function() {
         return check_juttle_success({
-            program: 'read opentsdb -from :30 minutes ago: -name "'
+            program: 'read opentsdb -from :30 minutes ago: name = "'
                 + TestUtils.metric_name + '" host = "123|456"'
         })
         .then(function(result) {
@@ -69,7 +78,7 @@ describe('test tag filters', function () {
     });
     it('by tag operater error', function() {
         return check_juttle({
-            program: 'read opentsdb -from :30 minutes ago: -name "' + TestUtils.metric_name + '" host != "123"'
+            program: 'read opentsdb -from :30 minutes ago: name = "' + TestUtils.metric_name + '" host != "123"'
         })
         .then(function() {
             throw new Error('Should never see this error');
