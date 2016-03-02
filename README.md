@@ -9,17 +9,17 @@ language](https://github.com/juttle/juttle), with read & write support.
 
 Read all `df.bytes.used` metric values from 30 minutes ago to now.
 ```juttle
-read opentsdb -from :30 minutes ago: -name "df.bytes.used"
+read opentsdb -from :30 minutes ago: name = "df.bytes.used"
 ```
 
 Add a `debug` option to return the final http query url:
 ```juttle
-read opentsdb -debug true -from :30 minutes ago: -name "df.bytes.used"
+read opentsdb -debug true -from :30 minutes ago: name = "df.bytes.used"
 ```
 
 Filter by host tag:
 ```juttle
-read opentsdb -from :30 minutes ago: -name "df.bytes.used" host = "test_host_name"
+read opentsdb -from :30 minutes ago: name = "df.bytes.used" host = "test_host_name"
 ```
 
 Write a test point:
@@ -57,7 +57,6 @@ within Juttle. To do so, add the following to your `~/.juttle/config.json` file:
 
 Name | Type | Required | Description
 -----|------|----------|-------------
-`name` | string | yes | name of the metric to query
 `debug` | boolean | no | output a query url corresponding to current set of options and filters
 `from` | moment | yes | select points after this time (inclusive)
 `to`   | moment | no | select points before this time (exclusive), defaults to `:now:`
@@ -68,6 +67,8 @@ In addition to these options, `read opentsdb` supports a subset of standard Jutt
 - `tagfield = 'value'`
 - `tagfield = '*glob*'`
 - combining the above filter expressions with `AND`
+
+A metric name is required in the filter expression: `name = "df.bytes.used"`.
 
 ### Write options
 
