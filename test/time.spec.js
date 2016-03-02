@@ -6,20 +6,9 @@ var check_juttle_success = TestUtils.check_juttle_success;
 var logger = require('juttle/lib/logger').getLogger('opentsdb-options');
 
 describe('test options', function () {
-    it('-name and -from indicated', function() {
-        return check_juttle_success({
-            program: 'read opentsdb -last :30m: -name "' + TestUtils.metric_name + '"'
-        })
-        .then(function(result) {
-            expect(result.sinks.table).to.have.length.gt(2);
-            result.sinks.table.forEach(function(metric) {
-                expect(metric.name).to.equal(TestUtils.metric_name);
-            });
-        });
-    });
     it('-from :0: is an acceptable query ', function() {
         return check_juttle_success({
-            program: 'read opentsdb -from :0: -to :now: -name "' + TestUtils.metric_name + '"'
+            program: 'read opentsdb -from :0: -to :now: name = "' + TestUtils.metric_name + '"'
         })
         .then(function(result) {
             expect(result.sinks.table).to.have.length.gt(2);
@@ -40,7 +29,7 @@ describe('test options', function () {
             logger.info('Performing live query, waiting ms:', wait);
 
             return check_juttle_success({
-                program: `read opentsdb -from :now: -to :end: -name "${TestUtils.metric_name}"`,
+                program: `read opentsdb -from :now: -to :end: name = "${TestUtils.metric_name}"`,
                 realtime: true
             }, wait);
         })
@@ -60,7 +49,7 @@ describe('test options', function () {
             logger.info('Performing super live query, waiting ms:', wait);
 
             return check_juttle_success({
-                program: `read opentsdb -from :-1m: -to :end: -name "${TestUtils.metric_name}"`,
+                program: `read opentsdb -from :-1m: -to :end: name = "${TestUtils.metric_name}"`,
                 realtime: true
             }, wait);
         })

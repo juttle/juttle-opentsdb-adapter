@@ -75,7 +75,7 @@ var TestUtils = {
 
         return retry(function() {
             return check_juttle({
-                program: `read opentsdb -from :30 minutes ago: -name "${metric_name}"`
+                program: `read opentsdb -from :30 minutes ago: name = "${metric_name}"`
             }).then(function(result) {
                 expect(result.errors[0]).equals(undefined);
                 expect(result.warnings[0]).equals(undefined);
