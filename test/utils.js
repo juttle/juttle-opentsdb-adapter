@@ -14,10 +14,11 @@ var TestUtils = {
         juttle_test_utils.configureAdapter({ opentsdb: config });
     },
     check_juttle: function(params, deactivateAfter) {
-        return check_juttle(params, deactivateAfter);
+        params.deactivateAfter = deactivateAfter;
+        return check_juttle(params);
     },
     check_juttle_success: function(params, deactivateAfter) {
-        return check_juttle(params, deactivateAfter)
+        return TestUtils.check_juttle(params, deactivateAfter)
         .then(function(res) {
             expect(res.errors[0]).to.equal(undefined);
             expect(res.warnings[0]).to.equal(undefined);
@@ -25,7 +26,7 @@ var TestUtils = {
         });
     },
     check_juttle_error: function(params, deactivateAfter) {
-        return check_juttle(params, deactivateAfter)
+        return TestUtils.check_juttle(params, deactivateAfter)
         .then(function(res) {
             throw new Error('This error should never occur');
         });
