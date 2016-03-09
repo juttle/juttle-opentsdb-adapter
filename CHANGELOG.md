@@ -1,6 +1,12 @@
 # Change Log
 This file documents all notable changes to the juttle-opentsdb-adapter. The release numbering uses [semantic versioning](http://semver.org).
 
+## 0.2.1
+Released 2016-03-09
+
+### Major Changes
+- Fixed live tests for juttle v0.6.0
+
 ## 0.2.0
 Released 2016-02-24
 
