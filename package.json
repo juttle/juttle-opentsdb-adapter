@@ -1,6 +1,6 @@
 {
   "name": "juttle-opentsdb-adapter",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "OpenTSDB Adapter for Juttle",
   "keywords": [
     "juttle",
@@ -28,8 +28,7 @@
     "underscore": "^1.8.3",
     "opentsdb-client": "juttle/client#allow-unix-time-zero",
     "opentsdb-datum": "juttle/datum#allow-value-zero",
-    "opentsdb-validate-time": "juttle/validate-time#unix-time-before-2001",
-    "underscore": "^1.8.3"
+    "opentsdb-validate-time": "juttle/validate-time#unix-time-before-2001"
   },
   "devDependencies": {
     "chai": "^1.10.0",
