@@ -23,12 +23,9 @@
   "dependencies": {
     "bluebird": "^3.0.5",
     "bluebird-retry": "^0.5.3",
-    "opentsdb": "juttle/opentsdb.js#temp-client",
+    "opentsdb": "^0.5.7",
     "opentsdb-socket": "0.0.2",
-    "underscore": "^1.8.3",
-    "opentsdb-client": "juttle/client#allow-unix-time-zero",
-    "opentsdb-datum": "juttle/datum#allow-value-zero",
-    "opentsdb-validate-time": "juttle/validate-time#unix-time-before-2001"
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "chai": "^1.10.0",
