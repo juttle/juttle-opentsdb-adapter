@@ -1,6 +1,12 @@
 # Change Log
 This file documents all notable changes to the juttle-opentsdb-adapter. The release numbering uses [semantic versioning](http://semver.org).
 
+## 0.3.0
+Released 2016-03-23
+
+### Minor Change
+- Support juttle v0.7.0
+
 ## 0.2.1
 Released 2016-03-09
 

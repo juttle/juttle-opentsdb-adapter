@@ -22,7 +22,7 @@ node_js:
     - '4.2'
 
 before_script:
-    - npm install juttle@^0.6.0;
+    - npm install juttle@^0.7.0;
     - pushd node_modules/juttle; npm install; popd;
 
 script:
